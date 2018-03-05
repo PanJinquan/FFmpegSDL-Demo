@@ -8,6 +8,7 @@
  * Communication University of China / Digital TV Technology
  * http://blog.csdn.net/leixiaohua1020
  * http://blog.csdn.net/leixiaohua1020/article/details/38868499
+ * http://blog.csdn.net/cdut100/article/details/52433085
  * 本程序实现了视频文件的解码(支持HEVC，H.264，MPEG2等)。
  * 是最简单的FFmpeg视频解码方面的教程。
  * 通过学习本例子可以了解FFmpeg的解码流程。
@@ -47,14 +48,16 @@ int main(int argc, char* argv[])
 
 	int frame_cnt;
 
-	av_register_all();
+	av_register_all();//注册所有组件
 	avformat_network_init();
 	pFormatCtx = avformat_alloc_context();
 
+	//打开输入视频文件
 	if(avformat_open_input(&pFormatCtx,filepath,NULL,NULL)!=0){
 		printf("Couldn't open input stream.\n");
 		return -1;
 	}
+	//获取视频文件信息
 	if(avformat_find_stream_info(pFormatCtx,NULL)<0){
 		printf("Couldn't find stream information.\n");
 		return -1;
@@ -71,12 +74,12 @@ int main(int argc, char* argv[])
 	}
 
 	pCodecCtx=pFormatCtx->streams[videoindex]->codec;
-	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
+	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);//查找解码器
 	if(pCodec==NULL){
 		printf("Codec not found.\n");
 		return -1;
 	}
-	if(avcodec_open2(pCodecCtx, pCodec,NULL)<0){
+	if(avcodec_open2(pCodecCtx, pCodec,NULL)<0){//打开解码器
 		printf("Could not open codec.\n");
 		return -1;
 	}
@@ -84,7 +87,6 @@ int main(int argc, char* argv[])
 	 * 在此处添加输出视频信息的代码
 	 * 取自于pFormatCtx，使用fprintf()
 	 */
-	printf("视频的时长:%dμs\n", pFormatCtx->duration);//输入视频的时长（以微秒为单位）
 	printf("视频的时长:%dμs\n", pFormatCtx->duration);//输入视频的时长（以微秒为单位）
 
 
@@ -102,13 +104,14 @@ int main(int argc, char* argv[])
 		pCodecCtx->width, pCodecCtx->height, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL); 
 
 	frame_cnt=0;
+	//从输入文件读取一帧压缩数据
 	while(av_read_frame(pFormatCtx, packet)>=0){
 		if(packet->stream_index==videoindex){
 				/*
 				 * 在此处添加输出H264码流的代码
 				 * 取自于packet，使用fwrite()
 				 */
-			ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, packet);
+			ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, packet);//解码一帧压缩数据
 			if(ret < 0){
 				printf("Decode Error.\n");
 				return -1;
@@ -130,12 +133,12 @@ int main(int argc, char* argv[])
 		av_free_packet(packet);
 	}
 
-	sws_freeContext(img_convert_ctx);
+	sws_freeContext(img_convert_ctx);  
 
 	av_frame_free(&pFrameYUV);
 	av_frame_free(&pFrame);
-	avcodec_close(pCodecCtx);
-	avformat_close_input(&pFormatCtx);
+	avcodec_close(pCodecCtx);//关闭解码器
+	avformat_close_input(&pFormatCtx);//关闭输入视频文件。
 
 	return 0;
 }

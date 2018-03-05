@@ -26,10 +26,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="simplest_video_play_sdl2.cpp">
+    <ClCompile Include="simplest_ffmpeg_decoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
