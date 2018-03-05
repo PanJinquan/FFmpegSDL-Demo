@@ -98,6 +98,7 @@ int main(int argc, char* argv[])
 	packet=(AVPacket *)av_malloc(sizeof(AVPacket));
 	//Output Info-----------------------------
 	printf("--------------- File Information ----------------\n");
+	//dump只是一个调试函数，输出文件的音、视频流的基本信息：帧率、分辨率、音频采样等等
 	av_dump_format(pFormatCtx,0,filepath,0);
 	printf("-------------------------------------------------\n");
 	img_convert_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, 
